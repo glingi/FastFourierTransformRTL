@@ -1,4 +1,9 @@
 # HLS
-High level synthesis
+Parallel 256-point fast Fourier transform (FFT) IP core using Xilinx HLS (high level synthesis)
 
-I try to commit
+Target frequency : 125 MHz
+
+Target latency :  <= 32 clock cycle
+
+Target device : kintex ultrascale KCU115
+
