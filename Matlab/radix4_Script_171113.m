@@ -6,12 +6,6 @@
 %   radix4FFT2_FixPt.m computes a fixed point radix-4 FFT (requires Fixed
 %   Point Toolbox)
 %
-%   radix4FFT3_FixPtEML.m is an Embedded MATLAB version of the radix-4 FFT
-%   that can be used in Simulink.  You can also generate C code for this
-%   code (using Real Time Workshop).  This version can also be compiled
-%   into a MEX'd executable that runs significantly faster than the fixed
-%   point code.
-%
 % For a description of the radix-4 FFT algorithm see the following link to
 % DSPDesignLine.com:
 %
