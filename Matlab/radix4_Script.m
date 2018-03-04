@@ -32,6 +32,7 @@ for ch = 3; %1  : size(compressedSigSet,1)
     nSegment = 10; % size(compressedSig,2) / NFFT;    
     fixedPointFFToutSet = zeros(1,nSegment); % zeros(1,size(compressedSig,2));
     matlabFFToutSet = zeros(1,nSegment);
+    
     for segloopCnt = 1 : nSegment
         % Get a part of signal
         segmendIdx = 1 + NFFT*(segloopCnt-1) : NFFT*segloopCnt ;
