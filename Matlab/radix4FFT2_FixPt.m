@@ -15,7 +15,6 @@ function [R, idxSet] = radix4FFT2_FixPt(s)
         wl = NT.WordLength;      % scalar
         W=fi(exp(-1*2j*pi*(0:N-1)/N), 1, wl, wl - 2, FM);           % 1x256 vector
         S = fi(complex(zeros(size(s))), NT, FM);                    % 1x256 vector
-%         S = fi(complex(zeros(size(s))), 1, 20);                    % 1x256 vector
         R = fi(complex(zeros(size(s))), 1, wl, wl  - 1 - 2*M, FM);  % 1x256 vector
         sTemp = fi(complex(zeros(size(s))), NT, FM);                % 1x256 vector
     else
@@ -45,7 +44,7 @@ function [R, idxSet] = radix4FFT2_FixPt(s)
 %     fprintf(fid,'}; \r\n'); 
 %     fclose(fid);
     
-    % Write TF in file
+    % Write Twiddle Factor in file
 %     TW_float = exp(-1*2j*pi*(0:N-1)/N);
 %     fid = fopen('TwiddleFactor_256point.txt','w');
 %     ct = 1;
@@ -126,18 +125,10 @@ function [R, idxSet] = radix4FFT2_FixPt(s)
         stageMat(:,4) = S;
         debugS = S.double.';
     end
-%     sTemp = S;
-
-%     load hls_output.mat
-% 
-%     xx= 1 : 256;
-%     ff = S.double;
-%     figure; plot(xx,ff,xx,hls_stage,'ro--');
                    
     % Rescale the final output
     R = S*N;
-  
-%     figure; plot(xx,R,xx,hls_fft,'ro--');
+
 end
 
 
@@ -171,8 +162,6 @@ function Z = radix4bfly(x,segment,stageFlag,W)
                 + 1i*(H_B.real*TF_fi.imag + H_B.imag*TF_fi.real);    
     B          = fi(B_f_full,1,14,13);
     
-%     B          = B_fi.double;
-    
     %% C=(a-b*1i-c+d*1i)*W(segment*stageFlag + 1);    
     %  b*1i = -b.imag + 1i*b.real --> -b*1i = b.imag - 1i*b.real
     %  d*1i = -d.imag + 1i*d.real
@@ -188,7 +177,7 @@ function Z = radix4bfly(x,segment,stageFlag,W)
     C_fi_full  = (H_C.real*TF_fi.real - H_C.imag*TF_fi.imag) ...
                 + 1i*(H_C.real*TF_fi.imag + H_C.imag*TF_fi.real);
     C          = fi(C_fi_full,1,14,13);
-%     C          = C_fi.double;
+
     %% D=(a+b*1i-c-d*1i)*W(3*segment*stageFlag + 1);
     %  b*1i = -b.imag + 1i*b.real 
     %  d*1i = -d.imag + 1i*d.real --> -d*1i = d.imag - 1i*d.real   
@@ -202,7 +191,7 @@ function Z = radix4bfly(x,segment,stageFlag,W)
     D_fi_full  = (H_D.real*TF_fi.real - H_D.imag*TF_fi.imag) ...
                  + 1i*(H_D.real*TF_fi.imag + H_D.imag*TF_fi.real); 
     D          = fi(D_fi_full,1,14,13);  
-%     D          = D_fi.double;
+
     % output
     Z = [A B C D];
 
