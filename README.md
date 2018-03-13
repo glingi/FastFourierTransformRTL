@@ -1,5 +1,5 @@
 # HLS
-Parallel 256-point fast Fourier transform (FFT) IP core using Xilinx HLS (high level synthesis)
+Parallel 256-point fast Fourier transform (FFT) IP core using Xilinx Vivado HLS (high level synthesis)
 
 Target frequency : 125 MHz
 
