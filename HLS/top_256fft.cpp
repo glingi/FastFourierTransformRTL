@@ -1,9 +1,9 @@
 #include "top_256fft.h"
 using namespace std;
 void radix4FFT3_FixPtEML(
-		ifix_W10_F9 in_fft[NFFT],		// Input is only real
-										// FMC126 ADC only supports unsigned data
-		cfix_W14_F8 out_fft[NFFT]		// for expander
+		ifix_W10_F9 in_fft[NFFT],	// Input is only real
+						// FMC126 ADC only supports unsigned data
+		cfix_W14_F8 out_fft[NFFT]	// for expander
 )
 {
 
@@ -240,12 +240,6 @@ void radix4FFT3_FixPtEML(
 	} // StgLv2:for (int  n = 0; n < 64; n++) {
 
 #ifndef __SYNTHESIS__
-//	ofstream st1;
-//	st1.open("./stage1.dat");
-//	for (int  n = 0; n < NFFT; n++) {
-//		st1 << setw(32) << stage1[n].real() <<"+1i*"<< stage1[n].imag() << endl;
-//	}
-//	st1.close();
 	std::cout << "-----------------------Stage1--------------------------- " << std::endl;
 	for (int  n = 0; n < NFFT; n++) {
 		std::cout << stage1[n].real() <<"+1i*"<< stage1[n].imag() << std::endl;
@@ -294,14 +288,6 @@ void radix4FFT3_FixPtEML(
 	} // StgLv3:for (int  n = 0; n < 64; n++) {
 
 #ifndef __SYNTHESIS__
-//	ofstream st2;
-//	st2.open("./stage2.dat");
-//	for (int  n = 0; n < NFFT; n++) {
-//		st2 << setw(32) << stage2[n].real() <<"+1i*"<< stage2[n].imag() << endl;
-//		cout << stage2[n].real() <<"+1i*"<< stage2[n].imag() << endl;
-//	}
-//	st2.close();
-
 	std::cout << "-----------------------Stage2--------------------------- " << std::endl;
 	for (int  n = 0; n < NFFT; n++) {
 		std::cout << stage2[n].real() <<"+1i*"<< stage2[n].imag() << std::endl;
@@ -344,14 +330,6 @@ void radix4FFT3_FixPtEML(
 	} // for (int n = 0; n < NFFT/4; n++)
 
 #ifndef __SYNTHESIS__
-//	ofstream st3;
-//	st3.open("./stage3.dat");
-//	for (int  n = 0; n < NFFT; n++) {
-//		st3 << setw(32) << stage3[n].real() <<"+1i*"<< stage3[n].imag() << endl;
-//		cout << stage3[n].real() <<"+1i*"<< stage3[n].imag() << endl;
-//	}
-//	st3.close();
-
 	cout << "-----------------------Stage3--------------------------- " <<endl;
 	for (int  n = 0; n < NFFT; n++) {
 		std::cout << stage3[n].real() <<"+1i*"<< stage3[n].imag() << std::endl;
@@ -362,32 +340,6 @@ void radix4FFT3_FixPtEML(
 
 cfix_W14_F5 stage_out[NFFT];
 #pragma HLS ARRAY_PARTITION variable=stage_out complete dim=0
-
-//	Scaling:for (int i=0; i<NFFT; i++) {
-//#pragma HLS UNROLL
-//		/*  Rescale the final output */
-//
-//		// The shift left operation result type is same as the type of operand
-//		// Operand must be cat to result type
-//		// refer to p.654, ug902 - 2017
-//
-//		stage_out[i].real()(13,0)   = stage3[i].real()(13,0); // bit range selection
-//		stage_out[i].imag()(13,0)   = stage3[i].imag()(13,0); // bit range selection
-//	}
-//
-//	/* Permute input into bit-reversed order */
-//	Revr:for (int i=0; i<NFFT; i++) {
-//		// Implict type casting, from W14_F5 to from W14_F8
-//		out_fft[i].real()[13] = stage_out[output_idx[i]].real()[13];
-//		out_fft[i].imag()[13] = stage_out[output_idx[i]].imag()[13];
-//
-//		out_fft[i].real()(12,3) = stage_out[output_idx[i]].real()(9,0);
-//		out_fft[i].imag()(12,3) = stage_out[output_idx[i]].imag()(9,0);
-//
-//		out_fft[i].real()(2,0) = 0;
-//		out_fft[i].imag()(2,0) = 0;
-//
-//	}
 
 	SnR:for (int i=0; i<NFFT; i++) {
 	#pragma HLS UNROLL
@@ -408,29 +360,8 @@ cfix_W14_F5 stage_out[NFFT];
 
 	}
 #ifndef __SYNTHESIS__
-	std::cout << "----------------------- scaling stage --------------------------- " << std::endl;
-//	ofstream stend;
-//	stend.open("./stageEnd.dat");
-//	for (int  n = 0; n < NFFT; n++) {
-//		stend << setw(32) << stage_out[n].real() <<"+1i*"<< stage_out[n].imag() << endl;
-//		cout << stage_out[n].real() <<"+1i*"<< stage_out[n].imag() << endl;
-//	}
-//	stend.close();
+	std::cout << "----------------------- scaling and reverse stage --------------------------- " << std::endl;
 
-	for (int  n = 0; n < NFFT; n++) {
-		std::cout << stage_out[n].real() <<"+1i*"<< stage_out[n].imag() << std::endl;
-	}
-	std::cout << std::endl;
-
-
-	std::cout << "----------------------- reverse stage --------------------------- " << std::endl;
-//	ofstream stend;
-//	stend.open("./stageEnd.dat");
-//	for (int  n = 0; n < NFFT; n++) {
-//		stend << setw(32) << stage_out[n].real() <<"+1i*"<< stage_out[n].imag() << endl;
-//		cout << stage_out[n].real() <<"+1i*"<< stage_out[n].imag() << endl;
-//	}
-//	stend.close();
 
 	for (int  n = 0; n < NFFT; n++) {
 		std::cout << out_fft[n].real() <<"+1i*"<< out_fft[n].imag() << std::endl;
@@ -530,29 +461,5 @@ void radix4bfly(
 	cfix_W29_F24 iD;
 	hls::cmpy<ARCH_CMPY>(H_D, TF, iD);
 	*D	= (cfix_W14_F13)iD;
-
-#ifndef __SYNTHESIS__
-//		cout << "H_B: " << H_B << endl;
-//		cout << "H_D: " << H_D << endl;
-//		cout << "H_C: " << H_C << endl;
-//
-//		cout << "A: " << *A << endl;
-//		cout << "B: " << *B << endl;
-//		cout << "C: " << *C << endl;
-//		cout << "D: " << *D << endl;
-	if (stageFlag == 0){
-//		cout << "aa: " << aa <<  "  bb: " << bb <<  "  cc:" << cc <<  "  dd:" << dd << endl;
-//
-//
-//		cout << "H_B: " << H_B << endl;
-//		cout << "H_D: " << H_D << endl;
-//		cout << "H_C: " << H_C << endl;
-//
-//		cout << "A: " << *A << endl;
-//		cout << "B: " << *B << endl;
-//		cout << "C: " << *C << endl;
-//		cout << "D: " << *D << endl;
-	}
-#endif
 }
 
