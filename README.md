@@ -1,4 +1,4 @@
-# HLS
+# Parallel 256-point FFT IP Core
 
 Parallel 256-point fast Fourier transform (FFT) IP core using Xilinx Vivado HLS (high level synthesis)
 
