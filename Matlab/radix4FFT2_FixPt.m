@@ -144,7 +144,7 @@ function Z = radix4bfly(x,segment,stageFlag,W)
     c=bitsra(x(3),2); %x(3)*.25;
     d=bitsra(x(4),2); %x(4)*.25;
     
-    %% A=a+b+c+d;    
+    %% A=a+b+c+d;
     tmpA = a.real+b.real+c.real+d.real ...
              + 1i*(a.imag+b.imag+c.imag+d.imag);                 
     % Force tmpA to be casted to A    
