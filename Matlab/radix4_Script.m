@@ -21,16 +21,14 @@ load fftTestSignal.mat
 % ADC normalization
 compressedSignal = compressedSignal / (2^10 - 1); 
 
-
-for ch = 3; %1  : size(compressedSigSet,1)
-
+for ch = 3
     compressedSig = 20*compressedSignal(ch,:);
     
     % Fixed Point Test
     % Run the Radix-4 FFT algorithm with a lower precision data type.    
     % Compare between real signal and fixed-point signal
-    nSegment = 10; % size(compressedSig,2) / NFFT;    
-    fixedPointFFToutSet = zeros(1,nSegment); % zeros(1,size(compressedSig,2));
+    nSegment = 10;  
+    fixedPointFFToutSet = zeros(1,nSegment); 
     matlabFFToutSet = zeros(1,nSegment);
     
     for segloopCnt = 1 : nSegment
