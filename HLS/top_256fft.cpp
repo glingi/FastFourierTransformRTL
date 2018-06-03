@@ -7,28 +7,27 @@ void radix4FFT3_FixPtEML(
 )
 {
 
-//	#pragma HLS PIPELINE //not available
+	// #pragma HLS PIPELINE //not available
 
-
-	// Reshape an array from one with many elements to one with
-	// greater word-width. Useful for improving block RAM
-	// accesses without using more block RAM.
+	// Reshape an array from one with many elements to one with greater word-width. 
+	// Useful for improving block RAM accesses without using more block RAM.
 	// Refer to UG902 p. 131
-	#pragma HLS INTERFACE ap_vld port=in_fft
-	#pragma HLS ARRAY_RESHAPE variable=in_fft
-	#pragma HLS ARRAY_RESHAPE variable=out_fft
+#pragma HLS INTERFACE ap_vld port=in_fft
+#pragma HLS ARRAY_RESHAPE variable=in_fft
+#pragma HLS ARRAY_RESHAPE variable=out_fft
 
-	//	Twiddle_factor_init_region
-	// UG902 p. 646
-	//	The ap_[u]fixed types do not support initialization if they are used in an array of
-	//std::complex types.
-	//typedef ap_fixed<DIN_W, 1, AP_TRN, AP_SAT> coeff_t; // MUST have IW >= 1
-	//std::complex<coeff_t> twid_rom[REAL_SZ/2] = {{ 1, -0 },{ 0.9,-0.006 }, etc.}
-	//The initialization values must first be case to std:complex:
-	//typedef ap_fixed<DIN_W, 1, AP_TRN, AP_SAT> coeff_t; // MUST have IW >= 1
-	//std::complex<coeff_t> twid_rom[REAL_SZ/2] = {std::complex<coeff_t>( 1, -0 ),
-	//std::complex<coeff_t>(0.9,-0.006 ),etc.}
-
+	// Twiddle factor initialization 
+	//
+	// The ap_[u]fixed types do not support initialization if they are used in an array of std::complex types.
+	// typedef ap_fixed<DIN_W, 1, AP_TRN, AP_SAT> coeff_t; // MUST have IW >= 1
+	// std::complex<coeff_t> twid_rom[REAL_SZ/2] = {{ 1, -0 },{ 0.9,-0.006 }, etc.}
+	//
+	// The initialization values must first be case to std:complex:
+	// typedef ap_fixed<DIN_W, 1, AP_TRN, AP_SAT> coeff_t; // MUST have IW >= 1
+	// std::complex<coeff_t> twid_rom[REAL_SZ/2] = {std::complex<coeff_t>( 1, -0 ),
+	// std::complex<coeff_t>(0.9,-0.006 ),etc.}
+	// Refer to UG902 p. 646
+	
 	cfix_W14_F12 TwiddleFactor[256];
 	TwiddleFactor[0].real()=1.000000; TwiddleFactor[1].real()=0.999699;TwiddleFactor[2].real()=0.998795;TwiddleFactor[3].real()=0.997290;TwiddleFactor[4].real()=0.995185;
 	TwiddleFactor[5].real()=0.992480; TwiddleFactor[6].real()=0.989177;TwiddleFactor[7].real()=0.985278;TwiddleFactor[8].real()=0.980785;TwiddleFactor[9].real()=0.975702;TwiddleFactor[10].real()=0.970031;
@@ -130,10 +129,10 @@ void radix4FFT3_FixPtEML(
 	cfix_W14_F13 x[4];
 #pragma HLS ARRAY_PARTITION variable=x dim=0
 
-	/*  This is a radix-4 FFT, using decimation in frequency */
-	/*  The input signal is fixed point */
-	/*  Works with real or complex input */
-	/*  NOTE: The length of the input signal should be a power of 4: 4, 16, 64, 256, etc. */
+	//  This is a radix-4 FFT, using decimation in frequency 
+	//  The input signal is fixed point 
+	//  Works with real or complex input 
+	//  NOTE: The length of the input signal should be a power of 4: 4, 16, 64, 256, etc. 
 
 	cfix_W14_F13   Ao;
 	cfix_W14_F13   Bo;
@@ -143,8 +142,9 @@ void radix4FFT3_FixPtEML(
 	/////////////////////////////////////////////
 	//  Calculate butterflies for first stages //
 	/////////////////////////////////////////////
+	
 	cfix_W14_F13 stage0[NFFT];
-	#pragma HLS ARRAY_PARTITION variable=stage0 complete dim=0
+#pragma HLS ARRAY_PARTITION variable=stage0 complete dim=0
 
 	int b_n;
 	ap_uint<4> sh = 2;
@@ -160,8 +160,8 @@ void radix4FFT3_FixPtEML(
 			x[m].imag() = ifix_W14_F13(0);
 
 #ifndef __SYNTHESIS__
-//	std::cout << setw(32) << "signedX : " << signedX << std::endl;
-//	std::cout << " x  : " << x[n].real() << "+1i*" << x[n].imag() << std::endl;
+	std::cout << setw(32) << "signedX : " << signedX << std::endl;
+	std::cout << " x  : " << x[n].real() << "+1i*" << x[n].imag() << std::endl;
 #endif
 		}
 
@@ -176,7 +176,7 @@ void radix4FFT3_FixPtEML(
 			&Do
 		);
 #ifndef __SYNTHESIS__
-//		cout << "Ao: " << Ao <<  "  Bo: " << Bo <<  "  Co:" << Co <<  "  Do:" << Do << endl;
+		cout << "Ao: " << Ao <<  "  Bo: " << Bo <<  "  Co:" << Co <<  "  Do:" << Do << endl;
 #endif
 		b_n = n << sh;
 		stage0[b_n  ] = Ao;	// bit truncation
@@ -188,15 +188,10 @@ void radix4FFT3_FixPtEML(
 
 #ifndef __SYNTHESIS__
 	std::cout << "-----------------------Stage0--------------------------- " << std::endl;
-//	ofstream st0;
-//	st0.open("./stage0.dat");
 	for (int  n = 0; n < NFFT; n++) {
-//		st0 << setw(32) << stage0[n].real() <<"+1i*"<< stage0[n].imag() << endl;
 		std::cout << stage0[n].real() <<"+1i*"<< stage0[n].imag() << std::endl;
 	}
 	std::cout << std::endl;
-
-//	st0.close();
 #endif
 
 	//////////////////////////////////////////////
@@ -213,8 +208,8 @@ void radix4FFT3_FixPtEML(
 #pragma HLS UNROLL
 			x[m] = stage0[n + m*64];
 
-#ifndef __SYNTHESIS__
-//				cout << "x[m]" << x[m] << endl;
+#ifndef __SYNTHESIS_
+			cout << "x[m]" << x[m] << endl;
 #endif
 		}
 
@@ -230,10 +225,10 @@ void radix4FFT3_FixPtEML(
 			&Do
 		);
 #ifndef __SYNTHESIS__
-//		cout << "Ao: " << Ao <<  "  Bo: " << Bo <<  "  Co:" << Co <<  "  Do:" << Do << endl;
+		cout << "Ao: " << Ao <<  "  Bo: " << Bo <<  "  Co:" << Co <<  "  Do:" << Do << endl;
 #endif
 		b_n = n << sh;
-		stage1[b_n  ] = Ao;	// bit truncation
+		stage1[b_n  ] = Ao;	// implict bit truncation
 		stage1[b_n+1] = Bo;
 		stage1[b_n+2] = Co;
 		stage1[b_n+3] = Do;
@@ -262,7 +257,6 @@ void radix4FFT3_FixPtEML(
 		Stg2Lv2:for (int m = 0; m < 4; m++) {
 #pragma HLS UNROLL
 			x[m] = stage1[n + m*64];
-//				cout << "x[m]" << x[m] << endl;
 		}
 
 		// Sub-function
@@ -277,7 +271,7 @@ void radix4FFT3_FixPtEML(
 			&Do
 		);
 #ifndef __SYNTHESIS__
-//		cout << "Ao: " << Ao <<  "  Bo: " << Bo <<  "  Co:" << Co <<  "  Do:" << Do << endl;
+		cout << "Ao: " << Ao <<  "  Bo: " << Bo <<  "  Co:" << Co <<  "  Do:" << Do << endl;
 #endif
 		b_n = n << sh;
 		stage2[b_n  ] = Ao;	// bit truncation
@@ -285,7 +279,7 @@ void radix4FFT3_FixPtEML(
 		stage2[b_n+2] = Co;
 		stage2[b_n+3] = Do;
 
-	} // StgLv3:for (int  n = 0; n < 64; n++) {
+	} // end for StgLv3:for (int  n = 0; n < 64; n++) 
 
 #ifndef __SYNTHESIS__
 	std::cout << "-----------------------Stage2--------------------------- " << std::endl;
@@ -298,7 +292,7 @@ void radix4FFT3_FixPtEML(
 
 
 	/////////////////////////////////////////////
-	/*  Calculate butterflies for last stage */
+	//  Calculate butterflies for last stage   //
 	/////////////////////////////////////////////
 
 	cfix_W14_F13 stage3[NFFT];
@@ -327,7 +321,7 @@ void radix4FFT3_FixPtEML(
 		stage3[b_n+1] = Bo;
 		stage3[b_n+2] = Co;
 		stage3[b_n+3] = Do;
-	} // for (int n = 0; n < NFFT/4; n++)
+	} // end for (int n = 0; n < NFFT/4; n++)
 
 #ifndef __SYNTHESIS__
 	cout << "-----------------------Stage3--------------------------- " <<endl;
@@ -343,7 +337,7 @@ cfix_W14_F5 stage_out[NFFT];
 
 	SnR:for (int i=0; i<NFFT; i++) {
 	#pragma HLS UNROLL
-		/*  Rescale and Permute input into bit-reversed order */
+		///  Rescale and Permute input into bit-reversed order 
 
 		// The shift left operation result type is same as the type of operand
 		// Operand must be cat to result type
@@ -361,8 +355,6 @@ cfix_W14_F5 stage_out[NFFT];
 	}
 #ifndef __SYNTHESIS__
 	std::cout << "----------------------- scaling and reverse stage --------------------------- " << std::endl;
-
-
 	for (int  n = 0; n < NFFT; n++) {
 		std::cout << out_fft[n].real() <<"+1i*"<< out_fft[n].imag() << std::endl;
 	}
@@ -371,22 +363,20 @@ cfix_W14_F5 stage_out[NFFT];
 
 
 #ifndef __SYNTHESIS__
-//	ofstream stout;
-//	stout.open("./fftout.dat");
-//	for (int  n = 0; n < NFFT; n++) {
-//		stout << setw(32) << out_fft[n].real() <<"+1i*"<< out_fft[n].imag() << endl;
-//		cout << out_fft[n].real() <<"+1i*"<< out_fft[n].imag() << endl;
-//	}
-//	stout.close();
+	ofstream stout;
+	stout.open("./fftout.dat");
+	for (int  n = 0; n < NFFT; n++) {
+		stout << setw(32) << out_fft[n].real() <<"+1i*"<< out_fft[n].imag() << endl;
+		cout << out_fft[n].real() <<"+1i*"<< out_fft[n].imag() << endl;
+	}
+	stout.close();
 #endif
 }
 
-
-/* Function Definitions */
 void radix4bfly(
 	cfix_W14_F13*   x,
-	int 		    segment,
-	int 		    stageFlag,
+	int 		segment,
+	int 		stageFlag,
 	cfix_W14_F12*   TwiddleFactor,
 	cfix_W14_F13*   A,
 	cfix_W14_F13*   B,
@@ -394,20 +384,16 @@ void radix4bfly(
 	cfix_W14_F13*   D
 ){
 	#pragma HLS PIPELINE II=2
-//	BU_Lv3:for (unsigned int m = 0; m < NFFT; m++) {
-//
-//		cout << "TwiddleFactor[" <<m << "] : " << TwiddleFactor[m] << endl;
-//	}
-
+	
 	cfix_W14_F13 aa;
 	cfix_W14_F13 bb;
 	cfix_W14_F13 cc;
-	cfix_W14_F13 dd; //	cfix_W28_F27 dd;
+	cfix_W14_F13 dd; 
 
-	/*  For the last stage of a radix-4 FFT all the ABCD multipliers are 1. */
-	/*  Use the stageFlag variable to indicate the last stage */
-	/*  stageFlag = 0 indicates last FFT stage, set to 1 otherwise */
-	/*  Initialize variables and scale by 1/4 */
+	//  For the last stage of a radix-4 FFT all the ABCD multipliers are 1. 
+	//  Use the stageFlag variable to indicate the last stage 
+	//  stageFlag = 0 indicates last FFT stage, set to 1 otherwise 
+	//  Initialize variables and scale by 1/4 
 
 	ap_uint<4> shL = 2;
 
@@ -424,7 +410,7 @@ void radix4bfly(
 	dd.imag() = x[3].imag() >> shL;
 
 
-	/*  Radix-4 Algorithm */
+	// Radix-4 Algorithm 
 	cfix_W14_F12 TF;
 
 	// A=a+b+c+d;
