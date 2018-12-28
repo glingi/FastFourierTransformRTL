@@ -16,18 +16,16 @@ int main()
 	cfix_W14_F8  fft_HLS_set[NFFT*nSegment];
 	cfix_W14_F8  fft_HLS[NFFT*nSegment];
 	
-	ifstream din_s_real;
-	din_s_real.open("./mid_fft_input_ch1.dat");
-	if(din_s_real.is_open()){
+	FILE* din_s_real;
+	din_s_real = fopen("./mid_fft_input_ch1.dat", "r");
 
-		for(int c = 0; c < NFFT*nSegment; c++){
-			din_s_real >> fft_in_set[c];
-		}
-
-	}else{
-		cout << "Error!! Missing file : input_real.dat or input_imag.dat " << endl;
+	float val;
+	for(int c = 0; c < NFFT*nSegment; c++){
+		fscanf(din_s_real, "%f", &val);
+		fft_in_set[c] = ifix_W10_F9(val);
 	}
-	din_s_real.close();
+
+	fclose(din_s_real);
 
 	// Below codes doesn't work		
 	// s[0].real() = 0.0008544922;	
@@ -50,21 +48,16 @@ int main()
 		}
 	}
 
-	ofstream dout_s_real;
-	ofstream dout_s_imag;
+	FILE* dout_s_real;
 
-	dout_s_real.open("./fft_HLS_out.dat");
+	dout_s_real = fopen("./fft_HLS_out.dat", "w");
 
-	if(dout_s_real.is_open()){
-
-		for(int c=0; c <NFFT*nSegment; c++){
-			dout_s_real << setw(32) << fft_HLS_set[c].real() << " + 1i*" <<  fft_HLS_set[c].imag() << endl;
-		}
-
-	}else{
-		cout << "Error!! Can't open input_real.dat or input_imag.dat " << endl;
+	for(int c=0; c <NFFT*nSegment; c++)
+	{
+		fprintf(dout_s_real, "%f + 1i*%f \n", fft_HLS_set[c].real(), fft_HLS_set[c].imag());
 	}
-	dout_s_real.close();
+
+	fclose(dout_s_real);
 
 	return 0;
 }
