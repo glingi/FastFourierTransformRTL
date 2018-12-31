@@ -105,7 +105,7 @@ void radix4FFT3_FixPtEML(
 	int b_n;
 	ap_uint<4> sh = 2;
 
-   int stage=0;
+   	int stage=0;
 	Stg0Lv1:for (int  n = 0; n < 64; n++) {
 #pragma HLS UNROLL
 		Stg0Lv2:for (int m = 0; m < 4; m++) {
@@ -114,11 +114,6 @@ void radix4FFT3_FixPtEML(
 			x[m].real()(13,4) = in_fft[n + m*64](9,0);
 			x[m].real()(3,0) = 0;
 			x[m].imag(0);
-
-#ifndef __SYNTHESIS__
-	std::cout << setw(32) << "signedX : " << signedX << std::endl;
-	std::cout << " x  : " << x[n].real() << "+1i*" << x[n].imag() << std::endl;
-#endif
 		}
 
 		radix4bfly(
@@ -131,9 +126,7 @@ void radix4FFT3_FixPtEML(
 			&Co,
 			&Do
 		);
-#ifndef __SYNTHESIS__
-		cout << "Ao: " << Ao <<  "  Bo: " << Bo <<  "  Co:" << Co <<  "  Do:" << Do << endl;
-#endif
+
 		b_n = n << sh;
 		stage0[b_n  ] = Ao;	// bit truncation
 		stage0[b_n+1] = Bo;
@@ -163,10 +156,6 @@ void radix4FFT3_FixPtEML(
 		Stg1Lv2:for (int m = 0; m < 4; m++) {
 #pragma HLS UNROLL
 			x[m] = stage0[n + m*64];
-
-#ifndef __SYNTHESIS_
-			cout << "x[m]" << x[m] << endl;
-#endif
 		}
 
 		// Sub-function
@@ -180,9 +169,7 @@ void radix4FFT3_FixPtEML(
 			&Co,
 			&Do
 		);
-#ifndef __SYNTHESIS__
-		cout << "Ao: " << Ao <<  "  Bo: " << Bo <<  "  Co:" << Co <<  "  Do:" << Do << endl;
-#endif
+
 		b_n = n << sh;
 		stage1[b_n  ] = Ao;	// implict bit truncation
 		stage1[b_n+1] = Bo;
@@ -198,7 +185,6 @@ void radix4FFT3_FixPtEML(
 	std::cout << std::endl;
 
 #endif
-
 
 	/////////////////////////////////////////////
 	/*  Calculate butterflies for third stages */
@@ -226,9 +212,7 @@ void radix4FFT3_FixPtEML(
 			&Co,
 			&Do
 		);
-#ifndef __SYNTHESIS__
-		cout << "Ao: " << Ao <<  "  Bo: " << Bo <<  "  Co:" << Co <<  "  Do:" << Do << endl;
-#endif
+
 		b_n = n << sh;
 		stage2[b_n  ] = Ao;	// bit truncation
 		stage2[b_n+1] = Bo;
@@ -245,7 +229,6 @@ void radix4FFT3_FixPtEML(
 	std::cout << std::endl;
 
 #endif
-
 
 	/////////////////////////////////////////////
 	//  Calculate butterflies for last stage   //
@@ -280,16 +263,15 @@ void radix4FFT3_FixPtEML(
 	} // end for (int n = 0; n < NFFT/4; n++)
 
 #ifndef __SYNTHESIS__
-	cout << "-----------------------Stage3--------------------------- " <<endl;
+	std::cout << "-----------------------Stage3--------------------------- " << std::endl;
 	for (int  n = 0; n < NFFT; n++) {
 		std::cout << stage3[n].real() <<"+1i*"<< stage3[n].imag() << std::endl;
 	}
 	std::cout << std::endl;
 #endif
 
-
-cfix_W14_F5 stage_out[NFFT];
-#pragma HLS ARRAY_PARTITION variable=stage_out complete dim=0
+	cfix_W14_F5 stage_out[NFFT];
+	#pragma HLS ARRAY_PARTITION variable=stage_out complete dim=0
 
 	SnR:for (int i=0; i<NFFT; i++) {
 	#pragma HLS UNROLL
@@ -309,15 +291,12 @@ cfix_W14_F5 stage_out[NFFT];
 
 	}
 #ifndef __SYNTHESIS__
-	std::cout << "----------------------- scaling and reverse stage --------------------------- " << std::endl;
+	std::cout << "-----------------------scaling and reverse stage--------------------------- " << std::endl;
 	for (int  n = 0; n < NFFT; n++) {
 		std::cout << out_fft[n].real() <<"+1i*"<< out_fft[n].imag() << std::endl;
 	}
 	std::cout << std::endl;
-#endif
 
-
-#ifndef __SYNTHESIS__
 	ofstream stout;
 	stout.open("./fftout.dat");
 	for (int  n = 0; n < NFFT; n++) {
